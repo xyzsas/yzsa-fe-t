@@ -1,24 +1,2 @@
-# yzsa-fe-t
-
-## Project setup
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+# 江苏省扬州中学 学生事务系统  
+> The Student Affair system for Yangzhou High School of Jiangsu Province(Front-End for Teachers)

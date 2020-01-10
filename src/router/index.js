@@ -1,27 +1,63 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
 
-Vue.use(VueRouter)
+import { Modal } from 'ant-design-vue';
+
+import store from '../store'
+
+Vue.use(VueRouter);
 
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: Home
-  },
-  {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    component: () => { return import('../views/Base') },
+    children: [
+      {
+        path: '',
+        component: () => { return import('../views/Home') },
+        meta: {
+          menuSelect: ['home', ''],
+          pageTitle: '主页',
+          role: 'teacher'
+        }
+      },
+      {
+        path: 'task',
+        component: () => { return import('../views/task/Base') },
+        children: [
+          {
+            path: '',
+            component: () => { return import('../views/task/List') },
+            meta: {
+              menuSelect: ['task', 'list'],
+              pageTitle: '任务列表',
+              role: 'teacher'
+            }
+          }
+        ]
+      }
+    ]
   }
-]
+];
 
 const router = new VueRouter({
   routes
-})
+});
+
+router.beforeEach((to, from, next) => {
+  store.commit('routeTo', to.meta);
+  let role = window.sessionStorage['role'];
+  if(role === 'admin' || role === to.meta.role) {
+    next();
+  } else {
+    Modal.error({
+      title: '错误',
+      content: '您没有权限',
+      onOk() {
+        window.location.href = '/';
+      }
+    });
+  }
+});
 
 export default router
