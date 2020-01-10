@@ -1,4 +1,3 @@
-import Vue from 'vue'
 import { Modal } from 'ant-design-vue';
 
 export default {
@@ -12,7 +11,7 @@ export default {
     }
   },
   logout: function () {
-    Vue.$axios.delete('/api/C/auth')
+    window.axios.delete('/api/C/auth')
       .then(() => {
         delete window.sessionStorage["name"];
         delete window.sessionStorage["id"];

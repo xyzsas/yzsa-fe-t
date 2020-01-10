@@ -1,6 +1,5 @@
 /* eslint-disable */
 import Hashes from './hashes.min'
-import axios from 'axios';
 
 const SALT = 'Supported_by_ITI';
 

@@ -7,9 +7,9 @@
         :selectedKeys="$store.state.menuSelect"
         :inlineCollapsed="collapsed"
       >
-        <a-menu-item key="list" @click="$router.push('/task/')">
-          <a-icon type="bars" />
-          <span>任务列表</span>
+        <a-menu-item key="password" @click="$router.push('/settings')">
+          <a-icon type="key" />
+          <span>修改密码</span>
         </a-menu-item>
       </a-menu>
     </a-layout-sider>
