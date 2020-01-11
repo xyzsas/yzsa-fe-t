@@ -1,6 +1,22 @@
 <template>
   <a-layout>
     <a-layout-sider collapsible v-model="collapsed">
+      <div style="
+        height: 40px;
+        margin: 4px 0 4px 0;
+        padding: 0 32px 0 32px;
+        color: #ffffff;
+        line-height: 40px;
+        font-size: 1.3em;
+        font-weight: bold;
+       ">
+        <template v-if="collapsed">
+          <a-icon type="user" />
+        </template>
+        <template v-else>
+          账号设置
+        </template>
+      </div>
       <a-menu
         mode="inline"
         theme="dark"

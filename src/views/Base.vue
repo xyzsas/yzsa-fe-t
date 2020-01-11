@@ -18,9 +18,9 @@
         </a-menu-item>
 
         <a-menu-item
-          key="task"
+          key="tasks"
           v-if="role === 'admin' || role === 'teacher'"
-          @click="$router.push('/task')"
+          @click="$router.push('/tasks')"
         >
           <a-icon type="project" />
           任务管理

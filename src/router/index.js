@@ -22,16 +22,26 @@ const routes = [
         }
       },
       {
+        path: 'tasks',
+        component: () => { return import('../views/Tasks') },
+        meta: {
+          menuSelect: ['tasks', ''],
+          pageTitle: '任务管理',
+          role: 'teacher'
+        }
+      },
+      {
         path: 'task',
         component: () => { return import('../views/task/Base') },
         children: [
           {
             path: '',
-            component: () => { return import('../views/task/List') },
+            component: () => { return import('../views/task/Info') },
             meta: {
-              menuSelect: ['task', 'list'],
-              pageTitle: '任务列表',
-              role: 'teacher'
+              menuSelect: ['tasks', 'info'],
+              pageTitle: '任务信息',
+              role: 'teacher',
+              addCurrentTask: true
             }
           }
         ]

@@ -1,15 +1,31 @@
 <template>
   <a-layout>
     <a-layout-sider collapsible v-model="collapsed">
+      <div style="
+        height: 40px;
+        margin: 4px 0 4px 0;
+        padding: 0 32px 0 32px;
+        color: #ffffff;
+        line-height: 40px;
+        font-size: 1.3em;
+        font-weight: bold;
+       ">
+        <template v-if="collapsed">
+          <a-icon type="project" />
+        </template>
+        <template v-else>
+          任务管理
+        </template>
+      </div>
       <a-menu
         mode="inline"
         theme="dark"
         :selectedKeys="$store.state.menuSelect"
         :inlineCollapsed="collapsed"
       >
-        <a-menu-item key="list" @click="$router.push('/task/')">
-          <a-icon type="bars" />
-          <span>任务列表</span>
+        <a-menu-item key="info" @click="$router.push('/task/')">
+          <a-icon type="info-circle" />
+          <span>任务信息</span>
         </a-menu-item>
       </a-menu>
     </a-layout-sider>
