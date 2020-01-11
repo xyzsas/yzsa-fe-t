@@ -3,13 +3,13 @@ module.exports = {
   lintOnSave: false,
   devServer: {
     proxy: {
-      "/api/": {
-        target: "http://sa.yzzx.org",
+      '/api/': {
+        target: 'http://sa.yzzx.org',
         ws: true,
-        changeOrigin: true,
+        changeOrigin: true
       },
-      "/www/": {
-        target: "http://sa.yzzx.org",
+      '/www/': {
+        target: 'http://sa.yzzx.org',
         ws: true,
         changeOrigin: true,
         pathRewrite: {
