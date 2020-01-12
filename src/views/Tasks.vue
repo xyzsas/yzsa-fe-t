@@ -26,13 +26,13 @@
           >
             <a-row>
               <a-col :span="5"><span>{{ item.id }}</span></a-col>
-              <a-col :span="5"><span style="font-size: 1.4em;">{{ item.title }}</span></a-col>
-              <a-col :span="5">
+              <a-col :span="7"><span style="font-size: 1.4em;">{{ item.title }}</span></a-col>
+              <a-col :span="4">
                 <span :style="{color: item.start === 0 ? '#f5222d' : '#52c41a'}">
                   {{ item.start === 0 ? '未运行' : '运行中' }}
                 </span>
               </a-col>
-              <a-col :span="5">
+              <a-col :span="4">
                 <div style="line-height: 24px" v-if="item.start !== 0">
                   从 {{ item.start | timeFormat }}
                   <br>

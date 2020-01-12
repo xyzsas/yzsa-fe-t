@@ -26,7 +26,7 @@
           任务管理
         </a-menu-item>
         <a-menu-item key="user" v-if="role === 'admin'"><a-icon type="team" />用户管理</a-menu-item>
-        <a-menu-item style="float: right;" key="1" @click="back"><a-icon type="logout" />返回前台</a-menu-item>
+        <a-menu-item style="float: right;" key="exit" @click="back"><a-icon type="logout" />返回前台</a-menu-item>
       </a-menu>
     </a-layout-header>
     <router-view />
@@ -55,6 +55,7 @@
   #app-bar .header {
     background: #fff;
     padding: 0;
+    min-width: 1056px;
   }
 
   #app-bar .logo {
