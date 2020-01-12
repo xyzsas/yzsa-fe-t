@@ -7,19 +7,19 @@ export default new Vuex.Store({
   state: {
     menuSelect: ['home', ''],
     pageTitle: '',
-    currentTask: {
-      id: '',
-      name: '',
-    }
+    currentTask: {}
   },
   mutations: {
     routeTo: function (state, payload) {
       state.menuSelect = payload.menuSelect;
       if(payload.addCurrentTask) {
-        state.pageTitle = `${payload.pageTitle} - ${state.currentTask.name}(${state.currentTask.id})`
+        state.pageTitle = `${payload.pageTitle} - ${state.currentTask.title}(${state.currentTask.id})`
       } else {
         state.pageTitle = payload.pageTitle;
       }
+    },
+    selectTask: function (state, payload) {
+      state.currentTask = payload;
     }
   },
   actions: {

@@ -4,11 +4,13 @@ export default {
   catchError: function (error) {
     Modal.error({
       title: "失败",
-      content: error.response.data
-    });
-    if(error.response.status === 401) {
-      this.logout();
-    }
+      content: error.response.data,
+      onOk: () => {
+        if(error.response.status === 401) {
+          this.logout();
+        }
+      }
+    })
   },
   logout: function () {
     window.axios.delete('/api/C/auth')

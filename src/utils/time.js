@@ -3,7 +3,7 @@ function padLeftZero(str) {
 }
 
 export default {
-  formatTime: function (timeStamp, fmt = 'yyyy-MM-dd hh:mm') {
+  formatTime: function (timeStamp, fmt = 'yyyy-MM-dd hh:mm:ss') {
     let date = new Date(timeStamp * 1000);
     if (/(y+)/.test(fmt)) {
       fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length));

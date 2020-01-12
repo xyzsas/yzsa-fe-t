@@ -45,21 +45,6 @@ const routes = [
             }
           }
         ]
-      },
-      {
-        path: 'settings',
-        component: () => { return import('../views/settings/Base') },
-        children: [
-          {
-            path: '',
-            component: () => { return import('../views/settings/Password') },
-            meta: {
-              menuSelect: ['settings', 'password'],
-              pageTitle: '修改密码',
-              role: 'teacher'
-            }
-          }
-        ]
       }
     ]
   }

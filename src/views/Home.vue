@@ -1,10 +1,10 @@
 <template>
-  <a-layout>
-    <div style="background: #ffffff; margin: 16px 16px 0 16px; padding: 8px; font-size: 1.5em;">
+  <a-layout style="margin-left: auto; margin-right: auto; min-width: 1056px;">
+    <div style="background: #ffffff; margin: 16px 16px 0 16px; padding: 8px; font-size: 1.5em; max-width: 1024px;">
       {{ $store.state.pageTitle }}
     </div>
     <a-layout-content style="min-height: calc(100vh - 192px); padding: 16px;">
-      <div style="background: #ffffff; padding: 16px; min-height: calc(100vh - 192px);">
+      <div style="background: #ffffff; padding: 16px; min-height: calc(100vh - 192px); max-width: 1024px;">
         <h1>江苏省扬州中学 学生事务系统</h1>
       </div>
     </a-layout-content>
