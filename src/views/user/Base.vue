@@ -11,10 +11,10 @@
         font-weight: bold;
        ">
         <template v-if="collapsed">
-          <a-icon type="project" />
+          <a-icon type="user" />
         </template>
         <template v-else>
-          任务管理
+          用户管理
         </template>
       </div>
       <a-menu
@@ -23,24 +23,9 @@
         :selectedKeys="$store.state.menuSelect"
         :inlineCollapsed="collapsed"
       >
-        <a-menu-item key="info" @click="$router.push('/task/')">
-          <a-icon type="info-circle" />
-          <span>任务信息</span>
-        </a-menu-item>
-
-        <a-menu-item key="edit" @click="$router.push('/task/edit')">
-          <a-icon type="edit" />
-          <span>编辑任务</span>
-        </a-menu-item>
-
-        <a-menu-item key="runtime" @click="$router.push('/task/runtime')">
-          <a-icon type="play-circle" />
-          <span>运行管理</span>
-        </a-menu-item>
-
-        <a-menu-item key="record" @click="$router.push('/task/record')">
-          <a-icon type="form" />
-          <span>任务记录</span>
+        <a-menu-item key="list" @click="$router.push('/user/')">
+          <a-icon type="profile" />
+          <span>用户列表</span>
         </a-menu-item>
       </a-menu>
     </a-layout-sider>

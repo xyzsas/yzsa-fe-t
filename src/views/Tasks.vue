@@ -64,7 +64,7 @@
       <a-input placeholder="任务名称" v-model="newTask.title" style="width: 300px; margin-bottom: 16px;"></a-input>
       <br>
       <span>任务类型：</span>
-      <a-select defaultValue="notice" v-model="newTask.type" style="width: 300px;">
+      <a-select v-model="newTask.type" style="width: 300px;">
         <a-select-option v-for="(v, k) in taskType" :key="k" :value="k">{{ v }}</a-select-option>
       </a-select>
     </a-modal>

@@ -3,6 +3,7 @@ function padLeftZero(str) {
 }
 
 export default {
+  // 将时间戳转为可读字符串
   formatTime: function (timeStamp, fmt = 'yyyy-MM-dd hh:mm:ss') {
     let date = new Date(timeStamp * 1000);
     if (/(y+)/.test(fmt)) {

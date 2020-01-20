@@ -1,43 +1,59 @@
 <template>
   <div>
-    <a-select @change="changeMode" v-model="mode" style="margin: 10px;">
-      <a-select-option value="tree">树形 tree</a-select-option>
-      <a-select-option value="view">查看 view</a-select-option>
-      <a-select-option value="form">表单 form</a-select-option>
-      <a-select-option value="text">文本 text</a-select-option>
-      <a-select-option value="preview">预览 preview</a-select-option>
-    </a-select>
-    <div ref="jsoneditor"></div>
+    <table>
+      <tr>
+        <td><b>id：</b></td>
+        <td>{{ $store.state.currentTask.id }}</td>
+      </tr>
+      <tr>
+        <td><b>标题：</b></td>
+        <td>{{ $store.state.currentTask.title }}</td>
+      </tr>
+      <tr>
+        <td><b>类型：</b></td>
+        <td>{{ utils.task.type[$store.state.currentTask.type] }}</td>
+      </tr>
+    </table>
+    <a-divider />
+
+    <template v-if="$store.state.currentTask.info">
+      展示方式：
+      <a-select @change="changeMode" v-model="mode" style="margin: 10px;">
+        <a-select-option value="view">树形</a-select-option>
+        <a-select-option value="preview">文本</a-select-option>
+      </a-select>
+      <div ref="jsonEditor"></div>
+    </template>
+    <b v-else>暂无任务信息，请到编辑任务页面添加任务信息</b>
+
   </div>
 </template>
 
 <script>
+
+  import utils from '../../utils'
+
   export default {
     data() {
       return {
+        utils,
         editor: null,
-        mode: "tree",
-        data: {},
-        example: {
-          courses: {
-            course1: 100,
-            course2: 100,
-            course3: 100
-          }
-        }
+        mode: 'view',
+        data: {}
       }
     },
     mounted() {
-      let container = this.$refs.jsoneditor;
-      this.editor = new JSONEditor(container);
-      this.editor.set(this.example);
+      if(this.$store.state.currentTask.info) {
+        let container = this.$refs.jsonEditor;
+        this.editor = new JSONEditor(container);
+        this.editor.set(this.$store.state.currentTask.info);
+        this.editor.setMode('view');
+        this.editor.expandAll();
+      }
     },
     methods: {
       changeMode: function() {
         this.editor.setMode(this.mode);
-      },
-      getData: function() {
-        this.data = this.editor.get();
       }
     }
   }

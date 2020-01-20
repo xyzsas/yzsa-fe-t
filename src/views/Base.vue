@@ -25,7 +25,14 @@
           <a-icon type="project" />
           任务管理
         </a-menu-item>
-        <a-menu-item key="user" v-if="role === 'admin'"><a-icon type="team" />用户管理</a-menu-item>
+        <a-menu-item
+          key="user"
+          v-if="role === 'admin'"
+          @click="$router.push('/permission')"
+        >
+          <a-icon type="team" />
+          用户管理
+        </a-menu-item>
         <a-menu-item style="float: right;" key="exit" @click="back"><a-icon type="logout" />返回前台</a-menu-item>
       </a-menu>
     </a-layout-header>
