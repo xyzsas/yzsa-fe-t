@@ -4,7 +4,6 @@
       <h1>编辑任务</h1>
       <a-button @click="deleteTask()">删除任务</a-button>
     </div>
-    <p>包含任务修改，删除任务</p>
     <table>
       <tr>
         <td><b>id：</b></td>
@@ -24,14 +23,18 @@
       </tr>
     </table>
     <a-divider />
-
-    展示方式：
-    <a-select @change="changeMode" v-model="mode" style="margin: 10px;">
-      <a-select-option value="view">树形</a-select-option>
-      <a-select-option value="preview">文本</a-select-option>
-    </a-select>
+    <div style="display: inline-flex; width: 100%; justify-content: space-between;">
+      <div> 展示方式：
+        <a-select @change="changeMode" v-model="mode" style="margin: 10px;">
+          <a-select-option value="view">树形</a-select-option>
+          <a-select-option value="preview">文本</a-select-option>
+        </a-select>
+      </div>
+      <a-button @click="edit()" style="top: 10px;">{{editMode}}</a-button>
+    </div>
     <div ref="jsonEditor"></div>
 
+    <a-button @click="updateTask()" style="top: 30px;">确认修改</a-button>
   </div>
 </template>
 
@@ -45,6 +48,7 @@
       return {
         utils: utils,
         editor: null,
+        editMode: '编辑',
         mode: 'view',
         taskType: utils.task.type,
         task: {
@@ -66,6 +70,15 @@
       changeMode: function() {
         this.editor.setMode(this.mode);
       },
+      edit: function() {
+        if (this.editMode === '编辑') {
+          this.editor.setMode('code');
+          this.editMode = '取消';
+        } else {
+          this.editMode = '编辑';
+          this.editor.setMode('view');
+        }
+      },
       deleteTask: function() {
         this.$axios.delete(`/api/T/task/${this.task.id}`)
           .then(res => {
@@ -76,7 +89,28 @@
             })
           })
           .catch(err => {
+            Modal.error({
+              title: "失败",
+              content: error.response.data,
+              onOk: () => { this.utils.general.Jump("/task/"); }
+            })
           })
+      },
+      updateTask: function() {
+        this.$store.state.currentTask.info = this.editor.get();
+        this.$axios.put(`/api/T/task/${this.task.id}`, {
+          'title': this.task.title,
+          'type': this.task.type,
+          'info': this.editor.get()
+        })
+        .then(res => {
+          Modal.success({
+            title: '成功',
+            content: '任务修改成功',
+            onOk:() => { this.editor.setMode('view'); }
+          })
+        })
+        .catch(err => {})
       }
     }
   }

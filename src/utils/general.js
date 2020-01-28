@@ -11,6 +11,9 @@ export default {
         if(error.response.status === 401) {
           // 身份验证错误
           this.logout();
+        } else {
+          // 跳回主页面
+          this.Jump('/tasks/');
         }
       }
     })
