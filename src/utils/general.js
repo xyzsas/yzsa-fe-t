@@ -22,7 +22,12 @@ export default {
         delete window.sessionStorage["name"];
         delete window.sessionStorage["id"];
         delete window.sessionStorage["token"];
-        window.location.href = '/';
+        this.Jump('/');
       });
+  },
+  // 跳转
+  Jump: function (url) {
+     window.location.href = url;
   }
 }
+

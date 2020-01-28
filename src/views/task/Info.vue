@@ -2,7 +2,7 @@
   <div>
     <table>
       <tr>
-        <td><b>id：</b></td>
+        <td><b>ID：</b></td>
         <td>{{ $store.state.currentTask.id }}</td>
       </tr>
       <tr>

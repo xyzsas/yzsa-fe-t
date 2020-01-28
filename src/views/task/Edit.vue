@@ -1,6 +1,9 @@
 <template>
   <div>
-    <h1>编辑任务</h1>
+    <div style="display: inline-flex; width: 100%; justify-content: space-between;">
+      <h1>编辑任务</h1>
+      <a-button @click="deleteTask()">删除任务</a-button>
+    </div>
     <p>包含任务修改，删除任务</p>
     <table>
       <tr>
@@ -34,12 +37,13 @@
 
 <script>
 
+  import { Modal } from 'ant-design-vue';
   import utils from '../../utils'
 
   export default {
     data() {
       return {
-        utils,
+        utils: utils,
         editor: null,
         mode: 'view',
         taskType: utils.task.type,
@@ -61,6 +65,18 @@
     methods: {
       changeMode: function() {
         this.editor.setMode(this.mode);
+      },
+      deleteTask: function() {
+        this.$axios.delete(`/api/T/task/${this.task.id}`)
+          .then(res => {
+            Modal.success({
+              title: '成功',
+              content: '任务删除成功',
+              onOk:() => { this.utils.general.Jump("/task/"); },
+            })
+          })
+          .catch(err => {
+          })
       }
     }
   }
