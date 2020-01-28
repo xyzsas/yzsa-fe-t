@@ -5,7 +5,9 @@
     </div>
     <a-layout-content style="min-height: calc(100vh - 192px); padding: 16px;">
       <div style="background: #ffffff; padding: 16px; min-height: calc(100vh - 192px); max-width: 1024px;">
-        <h1>江苏省扬州中学 学生事务系统</h1>
+        <h1>权限树</h1>
+        <p>展示权限树，可增删改，可选中，放入vuex。可参考task</p>
+        <a @click="select({'id': 'test', 'father': 'fa', 'tasks': []})">test</a>
       </div>
     </a-layout-content>
     <a-layout-footer style="padding: 0; height: 32px; line-height: 32px; text-align: center;">
@@ -14,5 +16,18 @@
   </a-layout>
 </template>
 
-<style scoped>
-</style>
+<script>
+  export default {
+    data() {
+      return {
+
+      }
+    },
+    methods: {
+      select(permission) {
+        this.$store.commit('selectPermission', permission);
+        this.$router.push('/user');
+      }
+    }
+  }
+</script>

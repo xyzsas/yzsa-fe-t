@@ -18,22 +18,22 @@
         </a-menu-item>
 
         <a-menu-item
-          key="task"
+          key="tasks"
           v-if="role === 'admin' || role === 'teacher'"
-          @click="$router.push('/task')"
+          @click="$router.push('/tasks')"
         >
           <a-icon type="project" />
           任务管理
         </a-menu-item>
-        <a-menu-item key="user" v-if="role === 'admin'"><a-icon type="team" />用户管理</a-menu-item>
-        <a-sub-menu key="1" style="float: right;">
-          <span slot="title" class="submenu-title-wrapper"><a-icon type="user" />您好，{{ name }}。</span>
-          <a-menu-item
-            key="settings"
-            @click="$router.push('/settings')"
-          ><a-icon type="setting" />账号设置</a-menu-item>
-          <a-menu-item key="2" @click="back"><a-icon type="logout" />返回前台</a-menu-item>
-        </a-sub-menu>
+        <a-menu-item
+          key="user"
+          v-if="role === 'admin'"
+          @click="$router.push('/permission')"
+        >
+          <a-icon type="team" />
+          用户管理
+        </a-menu-item>
+        <a-menu-item style="float: right;" key="exit" @click="back"><a-icon type="logout" />返回前台</a-menu-item>
       </a-menu>
     </a-layout-header>
     <router-view />
@@ -62,6 +62,7 @@
   #app-bar .header {
     background: #fff;
     padding: 0;
+    min-width: 1056px;
   }
 
   #app-bar .logo {
