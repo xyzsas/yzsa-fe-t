@@ -62,7 +62,19 @@
     mounted() {
       let container = this.$refs.jsonEditor;
       this.editor = new JSONEditor(container);
-      this.editor.set(this.task.info);
+      if (this.task.info !== null) this.editor.set(this.task.info);
+      else {
+        let sample = {
+          "样例" : {
+            "标题" : "内容",
+            "更多": {"继续" : "内容"},
+            "按照例子" : "完成"
+          },
+          "结束" : "：）",
+          "使用前请删除此例子":"谢谢"
+        }
+        this.editor.set(sample);
+      }
       this.editor.setMode('view');
       this.editor.expandAll();
     },
@@ -97,7 +109,11 @@
           })
       },
       updateTask: function() {
-        this.$store.state.currentTask.info = this.editor.get();
+        // bug here
+        // put返回成功且可显示info
+        // 退出后再加载，info无法显示
+        this.$store.state.currentTask.info = this.editor.get()
+        console.log(this.editor.get())
         this.$axios.put(`/api/T/task/${this.task.id}`, {
           'title': this.task.title,
           'type': this.task.type,
@@ -107,7 +123,10 @@
           Modal.success({
             title: '成功',
             content: '任务修改成功',
-            onOk:() => { this.editor.setMode('view'); }
+            onOk:() => { 
+              this.editMode = '编辑';
+              this.editor.setMode('view');
+            }
           })
         })
         .catch(err => {})

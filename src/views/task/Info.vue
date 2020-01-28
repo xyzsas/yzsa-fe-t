@@ -49,6 +49,11 @@
         this.editor.set(this.$store.state.currentTask.info);
         this.editor.setMode('view');
         this.editor.expandAll();
+      } else{
+        this.$axios.get(`/api/T/task/${this.$store.state.currentTask.id}`).then(res => {
+          
+          console.log(res.data.info);
+        });
       }
     },
     methods: {
