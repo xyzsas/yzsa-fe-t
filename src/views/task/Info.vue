@@ -43,18 +43,23 @@
       }
     },
     mounted() {
-      if(this.$store.state.currentTask.info) {
-        let container = this.$refs.jsonEditor;
-        this.editor = new JSONEditor(container);
-        this.editor.set(this.$store.state.currentTask.info);
-        this.editor.setMode('view');
-        this.editor.expandAll();
-      } else{
-        this.$axios.get(`/api/T/task/${this.$store.state.currentTask.id}`).then(res => {
-          
-          console.log(res.data.info);
+      this.$axios.get(`/api/T/task/${this.$store.state.currentTask.id}`)
+        .then(res => {
+          let len = Object.keys(res.data.info).length;
+          if (len > 0) {
+            this.$store.state.currentTask.info = res.data.info;
+          }
+          else this.$store.state.currentTask.info = null;
+        })
+        .then( () => {
+          if(this.$store.state.currentTask.info) {
+            let container = this.$refs.jsonEditor;
+            this.editor = new JSONEditor(container);
+            this.editor.set(this.$store.state.currentTask.info);
+            this.editor.setMode('view');
+            this.editor.expandAll();
+          }
         });
-      }
     },
     methods: {
       changeMode: function() {

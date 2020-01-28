@@ -11,7 +11,7 @@
       </tr>
       <tr>
         <td><b>标题：</b></td>
-        <td><a-input style="margin-bottom: 16px;" placeholder="任务标题" v-model="task.title"></a-input></td>
+        <td><a-input style="margin-bottom: 16px; margin-top: 16px;" placeholder="任务标题" v-model="task.title"></a-input></td>
       </tr>
       <tr>
         <td><b>类型：</b></td>
@@ -32,9 +32,9 @@
       </div>
       <a-button @click="edit()" style="top: 10px;">{{editMode}}</a-button>
     </div>
-    <div ref="jsonEditor"></div>
+    <div ref="jsonEditor" style="height: 32vh;"></div>
 
-    <a-button @click="updateTask()" style="top: 30px;">确认修改</a-button>
+    <a-button @click="updateTask()" style="top: 20px;">确认修改</a-button>
   </div>
 </template>
 
@@ -50,6 +50,7 @@
         editor: null,
         editMode: '编辑',
         mode: 'view',
+        sample: "",
         taskType: utils.task.type,
         task: {
           id: this.$store.state.currentTask.id,
@@ -62,18 +63,18 @@
     mounted() {
       let container = this.$refs.jsonEditor;
       this.editor = new JSONEditor(container);
-      if (this.task.info !== null) this.editor.set(this.task.info);
+      if (this.task.info) this.editor.set(this.task.info);
       else {
-        let sample = {
+        this.sample = {
           "样例" : {
             "标题" : "内容",
             "更多": {"继续" : "内容"},
             "按照例子" : "完成"
           },
-          "结束" : "：）",
+          "如果内容为空" : "请删除全部并输入null",
           "使用前请删除此例子":"谢谢"
         }
-        this.editor.set(sample);
+        this.editor.set(this.sample);
       }
       this.editor.setMode('view');
       this.editor.expandAll();
@@ -97,27 +98,26 @@
             Modal.success({
               title: '成功',
               content: '任务删除成功',
-              onOk:() => { this.utils.general.Jump("/task/"); },
+              onOk:() => { this.utils.general.Jump("/tasks/"); },
             })
           })
           .catch(err => {
             Modal.error({
               title: "失败",
-              content: error.response.data,
-              onOk: () => { this.utils.general.Jump("/task/"); }
+              content: err.response.data,
+              onOk: () => { this.utils.general.Jump("/tasks/"); }
             })
           })
       },
       updateTask: function() {
-        // bug here
-        // put返回成功且可显示info
-        // 退出后再加载，info无法显示
-        this.$store.state.currentTask.info = this.editor.get()
-        console.log(this.editor.get())
+        let content = this.editor.get();
+        if (!content) this.task.info = {};
+        else this.task.info = this.editor.get();
+        this.$store.state.currentTask.info = this.task.info 
         this.$axios.put(`/api/T/task/${this.task.id}`, {
           'title': this.task.title,
           'type': this.task.type,
-          'info': this.editor.get()
+          'info': this.task.info 
         })
         .then(res => {
           Modal.success({
@@ -129,7 +129,7 @@
             }
           })
         })
-        .catch(err => {})
+        .catch(err => { this.utils.general.catchError(); })
       }
     }
   }
