@@ -6,7 +6,7 @@
     </div>
     <table>
       <tr>
-        <td><b>id：</b></td>
+        <td><b>ID：</b></td>
         <td>{{task.id}}</td>
       </tr>
       <tr>
