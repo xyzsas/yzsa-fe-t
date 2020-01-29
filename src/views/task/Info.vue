@@ -22,7 +22,7 @@
         <a-select-option value="view">树形</a-select-option>
         <a-select-option value="preview">文本</a-select-option>
       </a-select>
-      <div ref="jsonEditor"></div>
+      <div ref="jsonEditor" style="max-height: 50vh;"></div>
     </template>
     <b v-else>暂无任务信息，请到编辑任务页面添加任务信息</b>
 
