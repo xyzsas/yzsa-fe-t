@@ -28,7 +28,7 @@
       let list;
       await this.$axios.get(`/api/A/permission`)
         .then(res => {
-          list = res.data;
+          list = Array.from(res.data);
         })
 
       let map = {}, node, roots = [], count = 0, i;
@@ -62,8 +62,7 @@
         let permission = {}, node = this.map[key];
         permission.id = node.id;
         permission.father = node.father;
-        permission.task = node.task;
-        
+        permission.task = node.task; 
         this.$store.commit('selectPermission', permission);
         this.$router.push('/user');
       },
