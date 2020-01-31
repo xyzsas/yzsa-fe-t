@@ -6,7 +6,7 @@
     <a-layout-content style="min-height: calc(100vh - 192px); padding: 16px;">
       <div style="background: #ffffff; padding: 16px; min-height: calc(100vh - 192px); max-width: 1024px;">
         <h1>权限树</h1>
-        <p>展示权限树，可增删改，可选中，放入vuex。可参考task</p>
+        <p>展示权限树，可增删改。可参考task</p>
         <a-tree :treeData="tree" style="font-size: 20px" @select="select"></a-tree>
       </div>
     </a-layout-content>

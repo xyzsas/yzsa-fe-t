@@ -26,14 +26,14 @@
 	            <a-button @click="openModal('pwd', item)">修改密码</a-button>
 	          </a-col>
 	          <a-col :span="6">
-	            <a-button disabled v-if="permission.id === 'admin'" style="color: red; border-color: red"@click="removeUser(item)">删除</a-button>
+	            <a-button disabled v-if="permission.id === 'admin'" @click="removeUser(item)">删除</a-button>
 	            <a-button v-else style="color: red; border-color: red"@click="removeUser(item)">删除</a-button>
 	          </a-col>
 	        </a-row>
 	      </div>
     	</div>
     	<template>
-	    	<a-pagination style="display: flex; justify-content: center; " simple v-model="page.curr" :defaultCurrent="1" :total="page.tot" />
+	    	<a-pagination style="display: flex; justify-content: center; " simple v-model="page.curr" :defaultCurrent="1" :total="page.tot" :defaultPageSize="1"/>
     	</template>
 
     </template>
@@ -161,9 +161,7 @@
   		const vh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
   		this.totRows = Math.round(0.54 * vh / 63)
   		this.page.tot = (Math.floor(this.list.length / this.totRows) + 1)
-  	},
-  	computed: {
-  		
+  		if (this.list.length === this.totRows * (this.page.tot - 1)) this.page.tot --;
   	},
   	created() {
 		  window.addEventListener("resize", this.calRows);
@@ -197,7 +195,8 @@
 	  		})
 	  			.then( res => {
 	  				res.data !== null? this.list = res.data : this.list = []
-	  				this.page.tot = (Math.floor(this.list.length / this.tot) + 1) * 10
+  					this.page.tot = (Math.floor(this.list.length / this.totRows) + 1)
+  					if (this.list.length < this.totRows * (this.page.tot - 1)) this.page.tot --;
 	  			})
   		},
       async createUser() {
