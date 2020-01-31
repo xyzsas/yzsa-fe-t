@@ -1,12 +1,12 @@
 <template>
-  <div style="max-height: 70vh;">
+  <div>
     <h1>用户列表</h1>
-    <p>当前选择的权限节点的用户列表，在当前权限节点添加用户，删除用户，修改用户名称，重置密码，全用模态框</p>
     <a-button v-if="permission.id !== 'admin'"type="dashed" block @click="openModal('new')" style="margin-bottom: 16px;"><a-icon type="plus" />添加用户</a-button>
     <template>
-    	<div style="max-height: 55vh;">
+    	<div style="height: 56vh;">
     		<div
-        v-for="item in list"
+        v-for="(item, index) in list"
+        v-if="index >= totRows * (page.curr - 1) && index < totRows * page.curr"
         :key="item.id"
         style="
           text-align: center;
@@ -14,23 +14,28 @@
           border-radius: 2px;
           height: 48px;
           line-height: 48px;
-          margin-bottom: 16px;
+          margin-bottom: 14px;
         "
-      	>
+      	> 
 	        <a-row>
 	          <a-col :span="6"><span style="font-size: 1.4em;">{{ item.name }}</span></a-col>
 	          <a-col :span="6">
-	            <a-button @click="changeInfo(item)">修改信息</a-button>
+	            <a-button @click="openModal('info', item)">修改信息</a-button>
 	          </a-col>
 	          <a-col :span="6">
-	            <a-button @click="openModal('pwd')">修改密码</a-button>
+	            <a-button @click="openModal('pwd', item)">修改密码</a-button>
 	          </a-col>
 	          <a-col :span="6">
-	            <a-button v-if="permission.id !== 'admin'" style="color: red; border-color: red"@click="removeUser(item)">删除</a-button>
+	            <a-button disabled v-if="permission.id === 'admin'" style="color: red; border-color: red"@click="removeUser(item)">删除</a-button>
+	            <a-button v-else style="color: red; border-color: red"@click="removeUser(item)">删除</a-button>
 	          </a-col>
 	        </a-row>
 	      </div>
     	</div>
+    	<template>
+	    	<a-pagination style="display: flex; justify-content: center; " simple v-model="page.curr" :defaultCurrent="1" :total="page.tot" />
+    	</template>
+
     </template>
     <a-modal
       title="新增用户"
@@ -83,6 +88,21 @@
       	</tr>
     	</table>
     </a-modal>
+    <a-modal
+      title="修改个人信息"
+      v-model="modalStat.info.visible"
+      :confirm-loading="modalStat.info.loading"
+      @ok="changeInfo"
+      okText="确认"
+      cancelText="取消"
+    >
+    	<table>
+      	<tr>
+        	<td><b>新名字：</b></td>
+        	<td><a-input placeholder="新名字" v-model="currUser.name" style="width: 300px; "/></td>
+      	</tr>
+    	</table>
+    </a-modal>
   </div>
 </template>
 
@@ -97,6 +117,12 @@
   			utils,
   			permission: this.$store.state.currentPermission,
   			list: [],
+  			currUser: {},
+  			page: {
+  				curr: 1,
+  				tot: 1
+  			},
+  			totRows: 7,
   			newUser: {
   				id: "",
   				name: "",
@@ -110,6 +136,10 @@
           pwd: {
 						visible: false,
           	loading: false
+          }, 
+          info: {
+          	visible: false,
+          	loading: false
           }
         },
         pwd: {
@@ -119,27 +149,44 @@
         }
   		}
   	},
-  	mounted() {
-  		this.$axios.get(`/api/A/user`, {
+  	async mounted() {
+  		await this.$axios.get(`/api/A/user`, {
   			params: {
   				'permission': this.permission.id
   			}
   		})
   			.then( res => {
-  				this.list = res.data
+  				res.data !== null? this.list = res.data : this.list = []
   			})
+  		const vh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+  		this.totRows = Math.round(0.54 * vh / 63)
+  		this.page.tot = (Math.floor(this.list.length / this.totRows) + 1)
   	},
+  	computed: {
+  		
+  	},
+  	created() {
+		  window.addEventListener("resize", this.calRows);
+		},
+		destroyed() {
+		  window.removeEventListener("resize", this.calRows);
+		},
   	methods: {
-  		openModal(which) {
+  		openModal(which, user) {
   			if (which === 'new') {
   				this.newUser.id = '';
         	this.newUser.name = '';
+        	this.newUser.role = '';
         	this.modalStat.new.visible = true;
   			} else if (which === 'pwd') {
   				this.pwd.old = '';
   				this.pwd.new = '';
   				this.pwd.confirm = '';
   				this.modalStat.pwd.visible = true;
+  				this.currUser = user;
+  			} else {
+  				this.modalStat.info.visible = true;
+  				this.currUser = user;
   			}
       },
       reloadUser() {
@@ -149,15 +196,16 @@
 	  			}
 	  		})
 	  			.then( res => {
-	  				this.list = res.data
+	  				res.data !== null? this.list = res.data : this.list = []
+	  				this.page.tot = (Math.floor(this.list.length / this.tot) + 1) * 10
 	  			})
   		},
       async createUser() {
       	this.modalStat.new.loading = true;
-      	if (!this.newUser.name || !this.newUser.id) {
+      	if (!this.newUser.name || !this.newUser.id || !this.newUser.role) {
       		Modal.error({
       			'title': '失败',
-      			'content': '用户名或ID不能为空'
+      			'content': '用户名或ID或职位不能为空'
       		})
       		this.modalStat.new.loading = false;
       		return;
@@ -184,7 +232,29 @@
 				this.reloadUser();
       }, 
       changeInfo() {
-
+      	this.modalStat.info.loading = true;
+      	if (!this.currUser || !this.currUser.name) {
+      		Modal.error({
+      			'title': '失败',
+      			'content': '用户不存在或新名字为空'
+      		})
+      		this.modalStat.info.loading = false;
+      		return;
+      	}
+      	this.$axios.put(`/api/A/user/${this.currUser.id}/name`, {
+      		'name': this.currUser.name
+      	})
+      		.then( res => {
+      			Modal.success({
+      				'title': '成功',
+      				'content': res.data
+      			})
+      			this.modalStat.info.loading = false;
+        		this.modalStat.info.visible = false;
+      		})
+      		.catch( err => {
+      			this.modalStat.pwd.loading = false;
+      		})
       },
       changePwd() {
 				this.modalStat.pwd.loading = true;
@@ -215,7 +285,7 @@
       		return;
       	}
 
-      	this.$axios.put("/api/U/pwd", {
+      	this.$axios.put(`/api/A/user/${this.currUser.id}/pwd`, {
           'oldPwd': this.pwd.old,
           'newPwd': this.pwd.new
         })
@@ -243,6 +313,11 @@
         		})
         		this.reloadUser();
       		})
+      },
+      calRows() {
+      	const vh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+  			this.totRows = Math.round(0.54 * vh / 63)
+  			this.page.tot = (Math.floor(this.list.length / this.totRows) + 1)
       }
   	}
   }
