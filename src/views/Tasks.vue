@@ -123,7 +123,7 @@
         this.$axios.post('/api/T/task', {
           'title': this.newTask.title,
           'type': this.newTask.type,
-          'info': {}
+          'info': utils.task.infoExample[this.newTask.type]
         })
           .then(res => {
             Modal.success({

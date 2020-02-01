@@ -1,211 +1,219 @@
 <template>
   <div>
-  	<div style="display: inline-flex; width: 100%; align-items: baseline; justify-content: space-between;">
-  		<div style="display: inline-flex; width: 100%; align-items: baseline;">
-  			<h1 style="width: 150px;">运行管理</h1>
-    		<h2 :style="{color: task.start === 0 ? '#f5222d' : '#52c41a'}"> {{ task.start === 0 ? '（已停止）' : '（正在运行）' }} </h2>
-  		</div>
-    	<a-button @click="end()">停止运行</a-button>
-    </div>
-    <table>
-      <tr>
-        <td><b>选择开始时间：</b></td>
-        <td>
-        	<a-date-picker
-		      :disabledDate="disabledStartDate"
-		      showTime
-		      format="YYYY-MM-DD HH:mm:ss"
-		      v-model="startValue"
-		      placeholder="Start"
-		      @openChange="handleStartOpenChange"
-		    	/>
-		  	</td>
-      </tr>
-      <br/>
-      <tr>
-        <td><b>选择结束时间：</b></td>
-        <td>
-          <a-date-picker
-			      :disabledDate="disabledEndDate"
-			      showTime
-			      format="YYYY-MM-DD HH:mm:ss"
-			      placeholder="End"
-			      v-model="endValue"
-			      :open="endOpen"
-			      @openChange="handleEndOpenChange"
-			    />
-        </td>
-      </tr>
-    </table>
-    <br/>
-    <a-button @click="start()">运行任务</a-button><br/>
-    <a-divider />
-    <table>
-    	<tr>
-        <td><b>用户ID：</b></td>
-        <td>
-        	<a-input style="width: 220px" placeholder="请输入ID" v-model="user.id" ref="userNameInput">
-        		<a-icon slot="prefix" type="user" />
-        	</a-input>
-		  	</td>
-      </tr>
-      <br/>
-      <tr>
-        <td><b>权限时长：</b></td>
-        <td>
-        	<a-time-picker placeholder="请选择添加时长" style="width: 220px" @change="onChange" :defaultOpenValue="moment('00:00:00', 'HH:mm:ss')" />
-		  	</td>
-      </tr>
-    </table>
-    <br/>
-    <a-button @click="auth()">添加权限</a-button>
-    <a-button @click="removeAuth()" style="margin-left: 120px;">删除权限</a-button>
+    <h3 style="margin-bottom: 24px;">
+      运行状态：
+      <span :style="{color: running ? '#52c41a' : '#f5222d' }">
+        {{ running ? '运行中' : '未运行' }}
+      </span>
+    </h3>
+    <template v-if="running">
+      <a-button @click="modalAddTemp.visible = true" style="margin-bottom: 16px; width: 200px;">添加临时权限</a-button>
+      <br>
+      <a-button @click="modalDeleteTemp.visible = true" style="margin-bottom: 16px; width: 200px;">删除临时权限</a-button>
+      <br>
+      <a-button @click="close" type="danger" style="width: 200px;">关闭任务</a-button>
+    </template>
+    <template v-else>
+      <a-button @click="modalOpen.visible = true" type="primary" style="width: 200px;">开启任务</a-button>
+    </template>
+
+    <a-modal
+      title="开启任务"
+      v-model="modalOpen.visible"
+      :confirm-loading="modalOpen.loading"
+      @ok="open"
+      okText="确认"
+      cancelText="取消"
+    >
+      <span>开始时间：</span>
+      <date-time ref="start" :key="'start'" style="margin-bottom: 16px;"></date-time>
+      <span>结束时间：</span>
+      <date-time ref="end" :key="'end'"></date-time>
+    </a-modal>
+
+    <a-modal
+      title="添加临时权限"
+      v-model="modalAddTemp.visible"
+      :confirm-loading="modalAddTemp.loading"
+      @ok="addTemp"
+      okText="确认"
+      cancelText="取消"
+    >
+      <a-input placeholder="用户ID" v-model="userId" style="width: 300px; margin-bottom: 16px;"></a-input>
+      <br>
+      <a-time-picker placeholder="权限有效期" @change="onDurationChange"></a-time-picker>
+    </a-modal>
+
+    <a-modal
+      title="删除临时权限"
+      v-model="modalDeleteTemp.visible"
+      :confirm-loading="modalDeleteTemp.loading"
+      @ok="deleteTemp"
+      okText="确认"
+      cancelText="取消"
+    >
+      <a-input placeholder="用户ID" v-model="userId" style="width: 300px; margin-bottom: 16px;"></a-input>
+    </a-modal>
+
   </div>
 </template>
 
 <script>
 
-	import utils from "../../utils";
-	import { Modal } from 'ant-design-vue';
-	import moment from 'moment';
+  import { Modal } from 'ant-design-vue';
+  import DateTime from "../../components/DateTime";
 
   export default {
-  	data() {
+    components: {
+      DateTime
+    },
+    data() {
       return {
-        utils,
-        startValue: null,
-        endValue: null,
-        endOpen: false,
-        duration: 0,
-        task: {
-        	id: this.$store.state.currentTask.id,
-        	start: this.$store.state.currentTask.start
+        task: this.$store.state.currentTask,
+        running: false,
+
+        modalOpen: {
+          visible: false,
+          loading: false
         },
-        user: {
-        	id: '',
-        	duration: 0
-        }
+        modalAddTemp: {
+          visible: false,
+          loading: false
+        },
+        modalDeleteTemp: {
+          visible: false,
+          loading: false
+        },
+
+        userId: '',
+        duration: 0
       }
     },
     mounted() {
-      
+      this.running = this.task.start !== 0;
     },
     methods: {
-    	// run the current task
-      start: function() {
-      	// err handling
-      	if (!this.startValue || !this.endValue) {
-      		Modal.error({
-            title: '失败',
-            content: '开始日期或结束日期不能为空'
+      open() {
+        this.modalOpen.loading = true;
+        let start = this.$refs.start.getTimeStamp();
+        let end = this.$refs.end.getTimeStamp();
+        if(isNaN(start) || isNaN(end)) {
+          Modal.error({
+            title: '错误',
+            content: '起止时间输入有误'
           });
+          this.modalOpen.loading = false;
+          this.modalOpen.visible = false;
           return;
-      	}
-      	this.$axios.put(`/api/T/task/${this.task.id}/open`, {
-      		'start': Math.trunc(this.startValue.valueOf() / 1000),
-      		'end': Math.trunc(this.endValue.valueOf() / 1000)
-      	})
-      		.then( res => {
-      			this.task.start = 1;
-      			Modal.success({
-      				title: "成功",
-      				content: res.data,
-      			})
-      		})
-      },
-      // close the current task
-      end: function() {
-      	// task should start before end
-      	if (this.task.start === 0) {
-      		Modal.error({
-      			title: '失败',
-            content: '任务尚未开启'
-      		})
-      		return;
-      	}
-      	this.$axios.put(`/api/T/task/${this.task.id}/close`)
-      		.then(res => {
-      			this.task.start = 0;
-      			Modal.success({
-      				title: "成功",
-      				content: res.data,
-      			})
-      		})
-      },
-      // give access right to a specific user
-      auth: function() {
-      	// task should start and input should not be empty
-      	if (this.task.start === 0) {
-      		Modal.error({
-      			title: '失败',
-            content: '任务尚未开启，仅可在运行中的任务添加权限'
-      		})
-      		return;
-      	}
-      	if (!this.user.id || !this.user.duration) {
-      		Modal.error({
-      			title: '失败',
-            content: '用户ID或权限时间为空'
-      		})
-      		return;
-      	}
-      	this.$axios.post(`/api/T/permission/${this.task.id}`, {
-      		'user': this.user.id,
-      		'expiration': this.user.duration
-      	})
-      		.then(res => {
-      			console.log(res)
-      			Modal.success({
-      				title: "成功",
-      				content: `用户${this.user.id}添加权限成功`,
-      			})
-      		})
-      },
-      // remove access right from a user
-      removeAuth: function() {
-      	if (!this.user.id) {
-      		Modal.error({
-      			title: '失败',
-            content: '用户ID为空'
-      		})
-      		return;
-      	}
-      	this.$axios.delete(`/api/T/permission/${this.task.id}/${this.user.id}`)
-      		.then(res => {
-      			Modal.success({
-      				title: "成功",
-      				content: `用户${this.user.id}删除权限成功`,
-      			})
-      		})
-      }, 
-      disabledStartDate(startValue) {
-        const endValue = this.endValue;
-        if (!startValue || !endValue) {
-          return false;
         }
-
-        return startValue.valueOf() >= endValue.valueOf();
+        this.$axios.put(`/api/T/task/${this.task.id}/open`, {
+          'start': start,
+          'end': end
+        })
+          .then(res => {
+            Modal.success({
+              title: '成功',
+              content: '任务开启成功'
+            });
+            this.$router.push('/task');
+          })
+          .catch(err => {
+            this.$router.push('/task');
+          })
       },
-      disabledEndDate(endValue) {
-        const startValue = this.startValue;
-        if (!endValue || !startValue) {
-          return false;
+      close() {
+        let that = this;
+        Modal.confirm({
+          title: '确认危险操作',
+          content: '确定关闭任务？运行时将无法找回！',
+          okText: '确认',
+          okType: 'danger',
+          cancelText: '取消',
+          onOk() {
+            return new Promise(resolve => {
+              that.$axios.put(`/api/T/task/${that.task.id}/close`)
+                .then(res => {
+                  Modal.success({
+                    title: '成功',
+                    content: '任务关闭成功'
+                  });
+                  that.$router.push('/task');
+                  resolve();
+                })
+                .catch(err => {
+                  that.$router.push('/task');
+                  resolve();
+                })
+            });
+          }
+        })
+      },
+      onDurationChange(time, timeString) {
+        this.duration = new Date('1970-1-1 ' + timeString).getTime();
+        this.duration = parseInt(this.duration / 1000) + 28800;
+      },
+      addTemp() {
+        this.modalAddTemp.loading = true;
+        if(this.userId === '') {
+          Modal.error({
+            title: '错误',
+            content: '用户ID不可为空'
+          });
+          this.modalAddTemp.loading = false;
+          this.modalAddTemp.visible = false;
+          return
         }
-        return startValue.valueOf() > endValue.valueOf();
-      },
-      handleStartOpenChange(open) {
-        if (!open) {
-          this.endOpen = true;
+        if(this.duration === 0) {
+          Modal.error({
+            title: '错误',
+            content: '有效期不可为空'
+          });
+          this.modalAddTemp.loading = false;
+          this.modalAddTemp.visible = false;
+          return
         }
+        this.$axios.post(`/api/T/permission/${this.task.id}`, {
+          'user': this.userId,
+          'expiration': this.duration
+        })
+          .then(res => {
+            Modal.success({
+              title: '成功',
+              content: '用户临时权限添加成功'
+            });
+            this.modalAddTemp.loading = false;
+            this.modalAddTemp.visible = false;
+          })
+          .catch(err => {
+            this.modalAddTemp.loading = false;
+            this.modalAddTemp.visible = false;
+          })
       },
-      handleEndOpenChange(open) {
-        this.endOpen = open;
-      },
-      moment,
-      onChange(time, timeString) {
-      	let t = timeString.split(":");
-      	this.user.duration = parseInt(t[0]) * 3600 + parseInt(t[1]) * 60 + parseInt(t[2]);
-      },
+      deleteTemp() {
+        this.modalDeleteTemp.loading = true;
+        if(this.userId === '') {
+          Modal.error({
+            title: '错误',
+            content: '用户ID不可为空'
+          });
+          this.modalDeleteTemp.loading = false;
+          this.modalDeleteTemp.visible = false;
+          return
+        }
+        this.$axios.delete(`/api/T/permission/${this.task.id}/${this.userId}`)
+          .then(res => {
+            Modal.success({
+              title: '成功',
+              content: '用户临时权限删除成功'
+            });
+            this.modalDeleteTemp.loading = false;
+            this.modalDeleteTemp.visible = false;
+          })
+          .catch(err => {
+            this.modalDeleteTemp.loading = false;
+            this.modalDeleteTemp.visible = false;
+          })
+      }
     }
   }
 </script>
