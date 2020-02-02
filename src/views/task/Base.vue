@@ -20,10 +20,10 @@
       <a-menu
         mode="inline"
         theme="dark"
-        :selectedKeys="$store.state.menuSelect"
+        :selectedKeys="[$store.state.menuSelect[1]]"
         :inlineCollapsed="collapsed"
       >
-        <a-menu-item key="info" @click="$router.push('/task/')">
+        <a-menu-item key="info" @click="$router.push('/task')">
           <a-icon type="info-circle" />
           <span>任务信息</span>
         </a-menu-item>

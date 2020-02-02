@@ -5,7 +5,7 @@
       <a-menu
         theme="dark"
         mode="horizontal"
-        :selectedKeys="$store.state.menuSelect"
+        :selectedKeys="[$store.state.menuSelect[0]]"
         style="line-height: 64px;"
       >
         <a-menu-item
@@ -28,7 +28,7 @@
         <a-menu-item
           key="user"
           v-if="role === 'admin'"
-          @click="$router.push('/permission')"
+          @click="$router.push('/tree')"
         >
           <a-icon type="team" />
           用户管理

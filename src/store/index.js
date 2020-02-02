@@ -17,7 +17,7 @@ export default new Vuex.Store({
       if(payload.addCurrentTask) {
         state.pageTitle = `${payload.pageTitle} - ${state.currentTask.title}(${state.currentTask.id})`
       } else if(payload.addCurrentPermission) {
-        state.pageTitle = `${payload.pageTitle} - ${state.currentPermission.id}`
+        state.pageTitle = `${payload.pageTitle} - ${state.currentPermission.name}(${state.currentPermission.id})`
       } else {
         state.pageTitle = payload.pageTitle;
       }

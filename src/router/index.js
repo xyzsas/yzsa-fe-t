@@ -77,8 +77,8 @@ const routes = [
         ]
       },
       {
-        path: 'permission',
-        component: () => { return import('../views/Permission') },
+        path: 'tree',
+        component: () => { return import('../views/Tree') },
         meta: {
           menuSelect: ['user', ''],
           pageTitle: '权限树',
@@ -86,15 +86,35 @@ const routes = [
         }
       },
       {
-        path: 'user',
-        component: () => { return import('../views/user/Base') },
+        path: 'permission',
+        component: () => { return import('../views/permission/Base') },
         children: [
           {
             path: '',
-            component: () => { return import('../views/user/List') },
+            component: () => { return import('../views/permission/Info') },
             meta: {
-              menuSelect: ['user', 'list'],
-              pageTitle: '用户列表',
+              menuSelect: ['user', 'info'],
+              pageTitle: '节点信息',
+              role: 'admin',
+              addCurrentPermission: true
+            }
+          },
+          {
+            path: 'edit',
+            component: () => { return import('../views/permission/Edit') },
+            meta: {
+              menuSelect: ['user', 'edit'],
+              pageTitle: '编辑节点',
+              role: 'admin',
+              addCurrentPermission: true
+            }
+          },
+          {
+            path: 'user',
+            component: () => { return import('../views/permission/User') },
+            meta: {
+              menuSelect: ['user', 'user'],
+              pageTitle: '用户管理',
               role: 'admin',
               addCurrentPermission: true
             }
