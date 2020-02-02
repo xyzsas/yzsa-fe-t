@@ -44,7 +44,14 @@
         editor: null,
         mode: 'tree',
         taskType: utils.task.type,
-        task: this.$store.state.currentTask,
+        task: {
+          id: this.$store.state.currentTask.id,
+          title: this.$store.state.currentTask.title,
+          type: this.$store.state.currentTask.type,
+          info: this.$store.state.currentTask.info,
+          start: this.$store.state.currentTask.start,
+          end: this.$store.state.currentTask.end
+        },
         loading: false
       }
     },

@@ -21,13 +21,6 @@ export default new Vuex.Store({
       } else {
         state.pageTitle = payload.pageTitle;
       }
-    },
-    // 选择某个task
-    selectTask: function (state, payload) {
-      state.currentTask = payload;
-    },
-    selectPermission: function (state, payload) {
-      state.currentPermission = payload;
     }
   },
   actions: {

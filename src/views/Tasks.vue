@@ -140,7 +140,7 @@
           })
       },
       showDetails(task) {
-        this.$store.commit('selectTask', task);
+        this.$store.state.currentTask = task;
         this.$router.push('/task');
       }
     },
