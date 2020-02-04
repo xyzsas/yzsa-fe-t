@@ -39,7 +39,7 @@
       okText="确认"
       cancelText="取消"
     >
-      <a-input placeholder="用户ID" v-model="userId" style="width: 300px; margin-bottom: 16px;"></a-input>
+      <a-input placeholder="用户ID" v-model="userId" style="margin-bottom: 16px;"></a-input>
       <br>
       <a-time-picker placeholder="权限有效期" @change="onDurationChange"></a-time-picker>
     </a-modal>
@@ -52,7 +52,7 @@
       okText="确认"
       cancelText="取消"
     >
-      <a-input placeholder="用户ID" v-model="userId" style="width: 300px; margin-bottom: 16px;"></a-input>
+      <a-input placeholder="用户ID" v-model="userId" style="margin-bottom: 16px;"></a-input>
     </a-modal>
 
   </div>

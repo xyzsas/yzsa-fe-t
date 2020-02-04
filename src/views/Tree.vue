@@ -28,9 +28,9 @@
       okText="确认"
       cancelText="取消"
     >
-      <a-input placeholder="节点ID" v-model="permission.id" style="width: 300px; margin-bottom: 16px;"></a-input>
+      <a-input placeholder="节点ID" v-model="permission.id" style="margin-bottom: 16px;"></a-input>
       <br>
-      <a-input placeholder="节点名称" v-model="permission.name" style="width: 300px; margin-bottom: 16px;"></a-input>
+      <a-input placeholder="节点名称" v-model="permission.name"></a-input>
     </a-modal>
   </a-layout>
 </template>

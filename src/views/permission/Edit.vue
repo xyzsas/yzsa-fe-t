@@ -38,7 +38,7 @@
       okText="确认"
       cancelText="取消"
     >
-      <a-input placeholder="任务ID" v-model="newTaskId" style="width: 300px;"></a-input>
+      <a-input placeholder="任务ID" v-model="newTaskId"></a-input>
     </a-modal>
 
   </div>
