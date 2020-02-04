@@ -1,5 +1,6 @@
 <template>
   <div>
+    <a-button type="dashed" block @click="openModalNew" style="margin-bottom: 16px;"><a-icon type="plus" />新建用户</a-button>
     <a-table :columns="columns" :dataSource="users" :loading="loading" rowKey="id">
       <span slot="action" slot-scope="i">
         <a @click="openModalPermission(i.id)">修改权限节点</a>
@@ -7,6 +8,8 @@
         <a @click="openModalName(i.id)">修改姓名</a>
         <a-divider type="vertical" />
         <a @click="resetPwd(i.id)">重置密码</a>
+        <a-divider type="vertical" />
+        <a @click="deleteUser(i.id)">删除用户</a>
       </span>
     </a-table>
 
@@ -30,6 +33,19 @@
       cancelText="取消"
     >
       <a-input placeholder="新姓名" v-model="modalName.name"></a-input>
+    </a-modal>
+
+    <a-modal
+      title="新建用户"
+      v-model="modalNew.visible"
+      :confirm-loading="modalNew.loading"
+      @ok="newUser"
+      okText="确认"
+      cancelText="取消"
+    >
+      <a-input placeholder="用户ID" v-model="modalNew.id" style="margin-bottom: 16px;"></a-input>
+      <a-input placeholder="用户姓名" v-model="modalNew.name" style="margin-bottom: 16px;"></a-input>
+      <a-input placeholder="用户角色" v-model="modalNew.role"></a-input>
     </a-modal>
 
   </div>
@@ -83,6 +99,13 @@
           visible: false,
           loading: false,
           name: ''
+        },
+        modalNew: {
+          visible: false,
+          loading: false,
+          id: '',
+          name: '',
+          role: ''
         }
       }
     },
@@ -111,6 +134,12 @@
         this.user = id;
         this.modalName.name = '';
         this.modalName.visible = true;
+      },
+      openModalNew() {
+        this.modalNew.id = '';
+        this.modalNew.name = '';
+        this.modalNew.role = '';
+        this.modalNew.visible = true;
       },
       updatePermission() {
         this.modalPermission.loading = true;
@@ -176,6 +205,56 @@
             });
           }
         });
+      },
+      deleteUser(id) {
+        let that = this;
+        Modal.confirm({
+          title: '确认危险操作',
+          content: '确定删除用户？',
+          okText: '确认',
+          okType: 'danger',
+          cancelText: '取消',
+          onOk() {
+            return new Promise(resolve => {
+              that.$axios.delete(`/api/A/user/${id}`)
+                .then(res => {
+                  Modal.success({
+                    title: '成功',
+                    content: '删除用户成功'
+                  });
+                  that.getList();
+                  resolve();
+                })
+                .catch(err => {
+                  that.getList();
+                  resolve();
+                })
+            });
+          }
+        });
+      },
+      newUser() {
+        this.modalNew.loading = true;
+        this.$axios.post('/api/A/user', {
+          id: this.modalNew.id,
+          name: this.modalNew.name,
+          role: this.modalNew.role,
+          permission: this.permission.id
+        })
+          .then(res => {
+            this.modalNew.loading = false;
+            this.modalNew.visible = false;
+            Modal.success({
+              title: '成功',
+              content: '新建用户成功'
+            });
+            this.getList();
+          })
+          .catch(err => {
+            this.modalNew.loading = false;
+            this.modalNew.visible = false;
+            this.getList();
+          })
       }
     }
   }
