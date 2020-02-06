@@ -1,96 +1,63 @@
 <template>
   <div>
-    <h1>任务记录</h1>
-    <a-button v-if="Object.keys(data).length > 0" @click="download()">下载任务记录</a-button>
-    <b v-else>暂无任务记录</b>
+    <a-button type="primary" size="large" :loading="loading" @click="download"><span><a-icon type="download" />下载任务记录</span></a-button>
   </div>
 </template>
 
 
 <script>
-	import utils from '../../utils';
-	import { Modal } from 'ant-design-vue';
+  import { Modal } from 'ant-design-vue';
+  import FileSaver from 'file-saver';
 
   export default {
-  	data() {
+    data() {
       return {
-        utils,
-        data: {},
-        CSV: ''
+        loading: false,
       }
     },
-    mounted() {
-    	this.$axios.get(`/api/T/record/${this.$store.state.currentTask.id}`)
-    		.then(res => {
-    			this.data = res.data;
-    		})
-    },
     methods: {
+      async download() {
 
-      download: function() {
-      	
-      	let arrData = typeof this.data != 'object' ? JSON.parse(this.data) : this.data;
-      	console.log(this.data)
-      	// set file name
-      	let fileName = this.$store.state.currentTask.title + '.csv';
-      	let CSV = '';
-      	for (let i = 0; i < Object.keys(arrData).length; i++) {
-          let row = "";
-            for (let index in arrData[i]) {
-              row += '"' + arrData[i][index] + '",';
-            }
-            row.slice(0, row.length - 1);
- 
-            //add a line break after each row
-            CSV += row + '\r\n';
-        }
-        if (CSV == '') {
-          Modal.error({
-          	title: '失败',
-            content: '无效的数据'
-          })
-          return;
-        }
-        this.saveAs(fileName, CSV);
-      },
-      buildCSV: function(data) {
+        let task = this.$store.state.currentTask.id;
+        let title = this.$store.state.currentTask.title;
+        let records = {};
+        let users = [];
+        let keys = [];
+        let csv = 'id,name,role,permission,';
 
-      },
-      saveAs: function(fileName, csvData) {
-		    var bw = this.browser();
-		    if(!bw['edge'] ||  !bw['ie']) {
-		      var alink = document.createElement("a");
-		      alink.id = "linkDwnldLink";
-		      alink.href = this.getDownloadUrl(csvData);
-		      document.body.appendChild(alink);
-		      var linkDom = document.getElementById('linkDwnldLink');
-		      linkDom.setAttribute('download', fileName);
-		      linkDom.click();
-		      document.body.removeChild(linkDom);
-		    }
-		  },
-      getDownloadUrl: function(csvData) {
-      	let _utf = "\uFEFF";
-      	if (window.Blob && window.URL && window.URL.createObjectURL) {
-	        let csvData = new Blob([_utf + csvData], {
-	            type: 'text/csv'
-	        });
-	        return URL.createObjectURL(csvData);
-	    	}
-	    	return 'data:attachment/csv;charset=utf-8,' + _utf + encodeURIComponent(csvData);
-	    },
-	    browser: function() {
-		    var Sys = {};
-		    var ua = navigator.userAgent.toLowerCase();
-		    var s;
-		    (s = ua.indexOf('edge') !== - 1 ? Sys.edge = 'edge' : ua.match(/rv:([\d.]+)\) like gecko/)) ? Sys.ie = s[1]:
-		        (s = ua.match(/msie ([\d.]+)/)) ? Sys.ie = s[1] :
-		        (s = ua.match(/firefox\/([\d.]+)/)) ? Sys.firefox = s[1] :
-		        (s = ua.match(/chrome\/([\d.]+)/)) ? Sys.chrome = s[1] :
-		        (s = ua.match(/opera.([\d.]+)/)) ? Sys.opera = s[1] :
-		        (s = ua.match(/version\/([\d.]+).*safari/)) ? Sys.safari = s[1] : 0;
-		    return Sys;
-		  }
+        this.loading = true;
+        await this.$axios.get(`/api/T/record/${task}`)
+          .then(res => {
+            records = res.data;
+          });
+        if(Object.keys(records).length === 0) {
+          Modal.info({
+            title: '提示',
+            content: '目前没有任务信息'
+          });
+          this.loading = false;
+          return
+        }
+        keys = Object.keys(records[Object.keys(records)[0]]);
+        await this.$axios.get(`/api/T/task/${task}/user`)
+          .then(res => {
+            users = res.data;
+          });
+
+        csv += keys.join(',') + '\n';
+        for(let i in users) {
+          let u = users[i];
+          csv += `${u.id},${u.name},${u.role},${u.permission}`;
+          for(let j in keys) {
+            let k = keys[j];
+            csv += `,${records[u.id] ? (records[u.id][k] ? records[u.id][k] : '') : ''}`
+          }
+          csv += '\n'
+        }
+        let blob = new Blob([csv], {type: 'text/plain;charset=utf-8'});
+        FileSaver.saveAs(blob, title + task + '.csv');
+        this.loading = false;
+      }
     }
   }
 </script>
