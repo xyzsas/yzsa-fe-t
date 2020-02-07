@@ -25,11 +25,20 @@
         let keys = [];
         let csv = 'id,name,role,permission,';
 
+        let error = false;
+
         this.loading = true;
         await this.$axios.get(`/api/T/record/${task}`)
           .then(res => {
             records = res.data;
+          })
+          .catch(err => {
+            this.loading = false;
+            error = true;
           });
+        if(error) {
+          return;
+        }
         if(Object.keys(records).length === 0) {
           Modal.info({
             title: '提示',
@@ -42,7 +51,14 @@
         await this.$axios.get(`/api/T/task/${task}/user`)
           .then(res => {
             users = res.data;
+          })
+          .catch(err => {
+            this.loading = false;
+            error = true;
           });
+        if(error) {
+          return;
+        }
 
         csv += keys.join(',') + '\n';
         for(let i in users) {
