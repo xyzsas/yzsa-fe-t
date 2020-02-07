@@ -7,6 +7,31 @@
       </span>
     </h3>
     <template v-if="running">
+      <template v-if="ticker.stat">
+        <a-card title="实时监控"  style="margin-bottom: 16px;">
+          <h2>任务进度</h2>
+          <a-progress :percent="timePercent" :showInfo="false" status="active" :strokeWidth="10"/>
+          <div>
+            <div style="float: left;">{{ task.start | timeFormat }}</div>
+            <div style="float: right;">{{ task.end | timeFormat }}</div>
+            <div style="clear: both;"></div>
+          </div>
+          <a-divider />
+          <h2>已完成任务人数：{{ runtimeData.count }}</h2>
+          <a-divider />
+          <h2>
+            实时信息
+            <a-select @change="changeMode" v-model="mode">
+              <a-select-option value="view">树形</a-select-option>
+              <a-select-option value="preview">文本</a-select-option>
+            </a-select>
+          </h2>
+          <div ref="jsonEditor"></div>
+        </a-card>
+        <a-button type="danger" style="width: 200px; margin-bottom: 16px;" :loading="ticker.closing" @click="ticker.closing = true">关闭实时监控</a-button>
+      </template>
+      <a-button v-else type="primary" style="width: 200px; margin-bottom: 16px;" @click="startTicker">开始实时监控</a-button>
+      <br>
       <a-button @click="modalAddTemp.visible = true" style="margin-bottom: 16px; width: 200px;">添加临时权限</a-button>
       <br>
       <a-button @click="modalDeleteTemp.visible = true" style="margin-bottom: 16px; width: 200px;">删除临时权限</a-button>
@@ -62,6 +87,11 @@
 
   import { Modal } from 'ant-design-vue';
   import DateTime from "../../components/DateTime";
+  import utils from '../../utils'
+
+  const sleep = (timeoutMS) => new Promise((resolve) => {
+    setTimeout(resolve, timeoutMS);
+  });
 
   export default {
     components: {
@@ -71,6 +101,11 @@
       return {
         task: this.$store.state.currentTask,
         running: false,
+
+        ticker: {
+          stat: false,
+          closing: false
+        },
 
         modalOpen: {
           visible: false,
@@ -86,13 +121,61 @@
         },
 
         userId: '',
-        duration: 0
+        duration: 0,
+
+        timePercent: 0,
+        runtimeData: {},
+
+        mode: 'view',
+        editor: null,
       }
     },
     mounted() {
       this.running = this.task.start !== 0;
     },
     methods: {
+      async startTicker() {
+        this.ticker.stat = true;
+
+        await this.$nextTick();
+
+        let container = this.$refs.jsonEditor;
+        this.editor = new JSONEditor(container);
+        this.editor.set(this.runtimeData.realTime);
+        this.editor.setMode('view');
+        this.editor.expandAll();
+
+        this.tickerLoop();
+      },
+      async tickerLoop() {
+        while(true) {
+          if(this.ticker.closing) {
+            this.ticker.stat = false;
+            this.ticker.closing = false;
+            break;
+          }
+          let currentTime = Math.floor(new Date().getTime() / 1000);
+          if(currentTime < this.task.start) {
+            this.timePercent = 0;
+          } else if(currentTime > this.task.end) {
+            this.timePercent = 100;
+          } else {
+            this.timePercent = (currentTime - this.task.start) / (this.task.end - this.task.start) * 100;
+          }
+          await this.$axios.get(`/api/T/task/${this.task.id}/runtime`)
+            .then(res => {
+              this.runtimeData = res.data;
+              this.editor.set(this.runtimeData.realTime);
+            })
+            .catch(err => {
+              this.ticker.closing = true;
+            });
+          await sleep(1000);
+        }
+      },
+      changeMode() {
+        this.editor.setMode(this.mode);
+      },
       open() {
         this.modalOpen.loading = true;
         let start = this.$refs.start.getTimeStamp();
@@ -149,8 +232,9 @@
         })
       },
       onDurationChange(time, timeString) {
-        this.duration = new Date('1970-1-1 ' + timeString).getTime();
-        this.duration = parseInt(this.duration / 1000) + 28800;
+        let b = new Date('1970-1-1 0:0:0').getTime();
+        let e = new Date('1970-1-1 ' + timeString).getTime();
+        this.duration = Math.floor((e - b) / 1000);
       },
       addTemp() {
         this.modalAddTemp.loading = true;
@@ -213,6 +297,11 @@
             this.modalDeleteTemp.loading = false;
             this.modalDeleteTemp.visible = false;
           })
+      }
+    },
+    filters: {
+      timeFormat: function (value) {
+        return utils.time.formatTime(value);
       }
     }
   }
