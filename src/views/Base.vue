@@ -28,7 +28,7 @@
         <a-menu-item
           key="user"
           v-if="role === 'admin'"
-          @click="$router.push('/tree')"
+          @click="$router.push('/user')"
         >
           <a-icon type="team" />
           用户管理

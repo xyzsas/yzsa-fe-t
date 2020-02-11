@@ -11,10 +11,10 @@
         font-weight: bold;
        ">
         <template v-if="collapsed">
-          <a-icon type="cluster" />
+          <a-icon type="user" />
         </template>
         <template v-else>
-          权限节点管理
+          用户管理
         </template>
       </div>
       <a-menu
@@ -23,20 +23,16 @@
         :selectedKeys="[$store.state.menuSelect[1]]"
         :inlineCollapsed="collapsed"
       >
-        <a-menu-item key="info" @click="$router.push('/permission')">
-          <a-icon type="info-circle" />
-          <span>节点信息</span>
+        <a-menu-item key="tree" @click="$router.push('/user')">
+          <a-icon type="cluster" />
+          <span>权限树</span>
         </a-menu-item>
 
-        <a-menu-item key="edit" @click="$router.push('/permission/edit')">
-          <a-icon type="edit" />
-          <span>编辑节点</span>
+        <a-menu-item key="batch" @click="$router.push('/user/batch')">
+          <a-icon type="usergroup-add" />
+          <span>批量添加用户</span>
         </a-menu-item>
 
-        <a-menu-item key="user" @click="$router.push('/permission/user')">
-          <a-icon type="profile" />
-          <span>用户管理</span>
-        </a-menu-item>
       </a-menu>
     </a-layout-sider>
     <a-layout>

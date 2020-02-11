@@ -104,7 +104,7 @@
                     title: '成功',
                     content: '删除权限节点、子节点及所属用户成功'
                   });
-                  that.$router.push('/tree');
+                  that.$router.push('/user');
                   resolve();
                 })
                 .catch(err => {

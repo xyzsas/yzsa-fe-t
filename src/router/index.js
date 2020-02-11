@@ -77,13 +77,28 @@ const routes = [
         ]
       },
       {
-        path: 'tree',
-        component: () => { return import('../views/Tree') },
-        meta: {
-          menuSelect: ['user', ''],
-          pageTitle: '权限树',
-          role: 'admin'
-        }
+        path: 'user',
+        component: () => { return import('../views/user/Base') },
+        children: [
+          {
+            path: '',
+            component: () => { return import('../views/user/Tree') },
+            meta: {
+              menuSelect: ['user', 'tree'],
+              pageTitle: '权限树',
+              role: 'admin'
+            }
+          },
+          {
+            path: 'batch',
+            component: () => { return import('../views/user/Batch') },
+            meta: {
+              menuSelect: ['user', 'batch'],
+              pageTitle: '批量添加用户',
+              role: 'admin'
+            }
+          }
+        ]
       },
       {
         path: 'permission',
