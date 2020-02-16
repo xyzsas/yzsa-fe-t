@@ -1,8 +1,9 @@
 <template>
   <div>
     <template v-if="uploaded">
-      <a-progress :percent="100 * now / tot" status="active" :showInfo="false" :strokeWidth="12" />
-      <div style="margin-top: 16px; background-color: #f0f2f5; padding: 16px; height: 400px; overflow-y:scroll; overflow-x:scroll;">
+      <a-progress :percent="100 * now / tot" status="active" :showInfo="false" :strokeWidth="12"/>
+      <span>{{ now }} / {{ tot }}</span>
+      <div style="margin-top: 16px; background-color: #f0f2f5; padding: 16px; height: 360px; overflow-y:scroll; overflow-x:scroll;">
         <ul style="list-style-type: none; padding: 0;">
           <li v-for="(item, index) in log" :key="index" :style="{color: logColor[item.type]}">{{ item.message }}</li>
         </ul>
