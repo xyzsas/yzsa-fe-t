@@ -28,9 +28,9 @@
           <span>权限树</span>
         </a-menu-item>
 
-        <a-menu-item key="batch" @click="$router.push('/user/batch')">
-          <a-icon type="usergroup-add" />
-          <span>批量添加用户</span>
+        <a-menu-item key="batch" @click="$router.push('/user/batch/user')">
+          <a-icon type="table" />
+          <span>批量操作</span>
         </a-menu-item>
 
       </a-menu>
