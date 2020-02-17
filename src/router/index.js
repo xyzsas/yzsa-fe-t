@@ -92,26 +92,11 @@ const routes = [
           {
             path: 'batch',
             component: () => { return import('../views/user/batch/Base') },
-            children: [
-              {
-                path: 'user',
-                component: () => { return import('../views/user/batch/User') },
-                meta: {
-                  menuSelect: ['user', 'batch', 'user'],
-                  pageTitle: '批量操作',
-                  role: 'admin'
-                }
-              },
-              {
-                path: 'permission',
-                component: () => { return import('../views/user/batch/Permission') },
-                meta: {
-                  menuSelect: ['user', 'batch', 'permission'],
-                  pageTitle: '批量操作',
-                  role: 'admin'
-                }
-              }
-            ]
+            meta: {
+              menuSelect: ['user', 'batch'],
+              pageTitle: '批量操作',
+              role: 'admin'
+            }
           }
         ]
       },

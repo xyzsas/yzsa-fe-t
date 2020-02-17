@@ -1,5 +1,5 @@
 <template>
-  <a-tabs :active-key="$store.state.menuSelect[2]" @change="onChange">
+  <a-tabs>
     <a-tab-pane key="user">
       <span slot="tab">
         <a-icon type="usergroup-add" />
@@ -22,11 +22,6 @@
     components: {
       BatchUser: () => import('./User'),
       BatchPermission: () => import('./Permission')
-    },
-    methods: {
-      onChange(actionKey) {
-        this.$router.replace(`/user/batch/${actionKey}`)
-      }
     }
   }
 </script>

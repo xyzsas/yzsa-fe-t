@@ -28,7 +28,7 @@
           <span>权限树</span>
         </a-menu-item>
 
-        <a-menu-item key="batch" @click="$router.push('/user/batch/user')">
+        <a-menu-item key="batch" @click="$router.push('/user/batch')">
           <a-icon type="table" />
           <span>批量操作</span>
         </a-menu-item>
