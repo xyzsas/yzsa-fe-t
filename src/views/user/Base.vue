@@ -28,6 +28,11 @@
           <span>权限树</span>
         </a-menu-item>
 
+        <a-menu-item key="query" @click="$router.push('/user/query')">
+          <a-icon type="search" />
+          <span>检索用户</span>
+        </a-menu-item>
+
         <a-menu-item key="batch" @click="$router.push('/user/batch')">
           <a-icon type="table" />
           <span>批量操作</span>

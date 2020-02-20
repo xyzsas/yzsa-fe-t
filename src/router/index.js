@@ -97,6 +97,15 @@ const routes = [
               pageTitle: '批量操作',
               role: 'admin'
             }
+          },
+          {
+            path: 'query',
+            component: () => { return import('../views/user/Query') },
+            meta: {
+              menuSelect: ['user', 'query'],
+              pageTitle: '检索用户',
+              role: 'admin'
+            }
           }
         ]
       },
