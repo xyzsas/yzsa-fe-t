@@ -70,6 +70,7 @@
           }
           csv += '\n'
         }
+        csv = '\ufeff' + csv;
         let blob = new Blob([csv], {type: 'text/plain;charset=utf-8'});
         FileSaver.saveAs(blob, title + task + '.csv');
         this.loading = false;

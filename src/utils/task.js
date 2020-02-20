@@ -7,11 +7,13 @@ export default {
   // 任务信息示例
   infoExample: {
     'Notice': {
-      'content': '此处填写通知的内容'
+      'content': '此处填写通知的内容',
+      'readTime': '阅读时间秒数'
     },
     'CourseSelect': {
       'lesson1': 50,
-      'lesson2': 60
+      'lesson2': 60,
+      'and so on': 70
     }
   }
 }
