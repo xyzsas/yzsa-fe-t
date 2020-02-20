@@ -1,6 +1,9 @@
 <template>
   <div>
-    <a-button type="dashed" block @click="openModalNew" style="margin-bottom: 16px;"><a-icon type="plus" />新建用户</a-button>
+    <div style="margin-bottom: 16px;">
+      <a-button type="dashed" @click="openModalNew" style="width: calc(100% - 316px); margin-right: 16px;"><a-icon type="plus" />新建用户</a-button>
+      <a-input-search style="width: 300px;" placeholder="按姓名搜索" @search="onSearch" enterButton />
+    </div>
     <a-table :columns="columns" :dataSource="users" :loading="loading" rowKey="id">
       <span slot="action" slot-scope="i">
         <a @click="openModalPermission(i.id)">修改权限节点</a>
@@ -85,6 +88,7 @@
         columns,
         permission: this.$store.state.currentPermission,
 
+        source: [],
         users: [],
         loading: false,
 
@@ -121,9 +125,23 @@
           }
         })
           .then(res => {
+            this.source = res.data;
             this.users = res.data;
             this.loading = false;
           })
+      },
+      onSearch(value, event) {
+        if(this.source.length === 0) {
+          return;
+        }
+        this.loading = true;
+        this.users = [];
+        for(let i in this.source) {
+          if(this.source[i].name.indexOf(value) !== -1) {
+            this.users.push(this.source[i]);
+          }
+        }
+        this.loading = false;
       },
       openModalPermission(id) {
         this.user = id;
