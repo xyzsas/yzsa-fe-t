@@ -5,8 +5,7 @@
     </div>
     <a-layout-content style="min-height: calc(100vh - 192px); padding: 16px;">
       <div style="background: #ffffff; padding: 16px; min-height: calc(100vh - 192px); max-width: 1024px;">
-        <h1>江苏省扬州中学 学生事务系统管理中心</h1>
-        <div style="margin: 50px 0  0 50px;" v-html="guideHTML"></div>
+        <h1>江苏省扬州中学 学生事务系统</h1>
       </div>
     </a-layout-content>
     <a-layout-footer style="padding: 0; height: 32px; line-height: 32px; text-align: center;">
@@ -14,25 +13,6 @@
     </a-layout-footer>
   </a-layout>
 </template>
-
-<script>
-  export default {
-    data() {
-      return {
-        guideHTML: ''
-      }
-    },
-    mounted() {
-      // do not use axios, otherwise token will be erased.
-      fetch("https://yzITI.github.io/yzsa-be/guide.md")
-        .then(resp => resp.text())
-        .then(md => {
-          if (md.indexOf('Page not found') > 0) return;
-          else this.guideHTML = marked(md);
-        });
-    }
-  }
-</script>
 
 <style scoped>
 </style>
