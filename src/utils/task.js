@@ -9,7 +9,7 @@ export default {
   infoExample: {
     'Notice': {
       'content': '此处填写通知的内容',
-      'readTime': '阅读时间秒数'
+      'readTime': 5
     },
     'CourseSelect': {
       'lesson1': 50,
@@ -33,5 +33,11 @@ export default {
         'max': 1000
       }
     }
+  },
+  // 任务信息生成工具
+  infoGenerator: {
+    'Notice': () => import('../components/infoGenerator/Notice'),
+    'CourseSelect': () => import('../components/infoGenerator/CourseSelect'),
+    'Form': () => import('../components/infoGenerator/Form')
   }
 }

@@ -42,7 +42,7 @@
       return {
         utils,
         editor: null,
-        mode: 'view',
+        mode: 'preview',
         loading: true
       }
     },
@@ -59,8 +59,7 @@
             let container = this.$refs.jsonEditor;
             this.editor = new JSONEditor(container);
             this.editor.set(this.$store.state.currentTask.info);
-            this.editor.setMode('view');
-            this.editor.expandAll();
+            this.editor.setMode('preview');
           }
         })
         .catch(err => {
@@ -70,6 +69,9 @@
     methods: {
       changeMode: function() {
         this.editor.setMode(this.mode);
+        if(this.mode === 'view') {
+          this.editor.expandAll();
+        }
       }
     }
   }

@@ -24,13 +24,25 @@
             <a-select-option value="tree">树形</a-select-option>
             <a-select-option value="code">文本</a-select-option>
           </a-select>
+          <a-button @click="openInfoGenerator" style="margin-left: 16px;">信息生成工具</a-button>
         </td>
       </tr>
     </table>
-    <div ref="jsonEditor"></div>
+    <div ref="jsonEditor" style="height: 400px;"></div>
     <a-button @click="updateTask()" style="margin-top: 16px; width: 200px;" type="primary" :loading="loading">提交修改</a-button>
     <br>
     <a-button @click="deleteTask()" style="margin-top: 16px; width: 200px;" type="danger">删除任务</a-button>
+
+    <a-modal
+      title="信息生成工具"
+      v-model="modalVisible"
+      @ok="generateInfo"
+      okText="生成"
+      cancelText="取消"
+    >
+      <component ref="generator" :is="generator"></component>
+    </a-modal>
+
   </div>
 </template>
 
@@ -42,7 +54,7 @@
     data() {
       return {
         editor: null,
-        mode: 'tree',
+        mode: 'code',
         taskType: utils.task.type,
         task: {
           id: this.$store.state.currentTask.id,
@@ -52,19 +64,44 @@
           start: this.$store.state.currentTask.start,
           end: this.$store.state.currentTask.end
         },
-        loading: false
+        loading: false,
+
+        modalVisible: false,
+
+        generator: utils.task.infoGenerator[this.$store.state.currentTask.type]
       }
     },
     mounted() {
       let container = this.$refs.jsonEditor;
       this.editor = new JSONEditor(container);
       this.editor.set(this.task.info);
-      this.editor.setMode('tree');
-      this.editor.expandAll();
+      this.editor.setMode('code');
     },
     methods: {
+      openInfoGenerator() {
+        let content = this.editor.get();
+        if (!content) {
+          this.task.info = {};
+        } else {
+          this.task.info = content;
+        }
+        this.modalVisible = true;
+        this.$nextTick(() => {
+          this.$refs.generator.setInfo(this.task.info);
+        });
+      },
+      generateInfo() {
+        this.task.info = this.$refs.generator.getInfo();
+        this.editor.set(this.task.info);
+        this.$nextTick(() => {
+          this.modalVisible = false;
+        });
+      },
       changeMode: function() {
         this.editor.setMode(this.mode);
+        if(this.mode === 'tree') {
+          this.editor.expandAll();
+        }
       },
       deleteTask: function() {
         let that = this;
