@@ -66,7 +66,11 @@
           csv += `${u.id},${u.name},${u.role},${u.permission}`;
           for(let j in keys) {
             let k = keys[j];
-            csv += `,${records[u.id] ? (records[u.id][k] ? records[u.id][k] : '') : ''}`
+            let v = records[u.id] ? (records[u.id][k] ? records[u.id][k] : '') : '';
+            if(v instanceof Array) {
+              v = v.join()
+            }
+            csv += `,"${v.replace(/"/g, `""`)}"`
           }
           csv += '\n'
         }
