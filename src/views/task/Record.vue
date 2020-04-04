@@ -16,7 +16,7 @@
           <br>
           若 keys 省略，请保证 data 中每个对象的结构相同。省略即 undefined
         </p>
-        <a-textarea placeholder="function" :rows="5" style="margin-bottom: 16px;" v-model="func"/>
+        <a-textarea placeholder="function" autoSize style="margin-bottom: 16px;" v-model="func"/>
         <a-button @click="runFunc" :loading="runLoading"><span><a-icon type="play-circle" />运行并下载</span></a-button>
       </a-card>
     </div>
@@ -46,7 +46,7 @@
         taskId: this.$store.state.currentTask.id,
         taskTitle: this.$store.state.currentTask.title,
 
-        func: `function(data) { return { data: data, keys: ['id', 'A']} }`
+        func: `function(data) { return { data: data, keys: ['id', 'name']} }`
       }
     },
     methods: {
@@ -106,7 +106,7 @@
         this.runLoading = true;
         let f = new Function('return ' + this.func)();
         let res = f(this.srcData);
-        utils.file.downloadText('result.csv', utils.file.dumpCSV(res.data, res.keys));
+        if (res) utils.file.downloadText('result.csv', utils.file.dumpCSV(res.data, res.keys));
         this.runLoading = false;
       }
     }
