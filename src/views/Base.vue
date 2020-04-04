@@ -52,7 +52,7 @@
     },
     methods: {
       back() {
-        window.location.href = '/';
+        window.location.href = '/home.html';
       }
     }
   }

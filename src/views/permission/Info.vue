@@ -17,20 +17,53 @@
         <td><b>任务列表：</b></td>
       </tr>
     </table>
-    <a-list size="small" style="width:300px;" bordered :dataSource="permission.tasks">
-      <a-list-item slot="renderItem" slot-scope="item">
-        <a-list-item-meta><span slot="title" >{{ item }}</span></a-list-item-meta>
-      </a-list-item>
-    </a-list>
+
+    <a-table style="width: 600px;" :columns="columns" :dataSource="taskList" :loading="loading" size="middle" rowKey="id"></a-table>
   </div>
 </template>
 
 <script>
+
+  const columns = [
+    {
+      title: 'ID',
+      dataIndex: 'id',
+      key: 'id'
+    },
+    {
+      title: '标题',
+      dataIndex: 'title',
+      key: 'title'
+    }
+  ];
+
   export default {
     data() {
       return {
-        permission: this.$store.state.currentPermission
+        columns,
+
+        loading: true,
+        permission: this.$store.state.currentPermission,
+
+        taskList: []
       }
+    },
+    async mounted() {
+      let tasks, taskNames = {};
+      await this.axios.get('/api/T/task')
+        .then(res => {
+          tasks = res.data;
+        });
+      for(let i = 0; i < tasks.length; i++) {
+        taskNames[tasks[i].id] = tasks[i].title;
+      }
+      for(let i = 0; i < this.permission.tasks.length; i++) {
+        this.taskList.push({
+          id: this.permission.tasks[i],
+          title: taskNames[this.permission.tasks[i]]
+        });
+      }
+      this.loading = false;
     }
   }
 </script>

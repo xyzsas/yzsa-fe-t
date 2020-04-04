@@ -17,29 +17,20 @@
         <td><b>任务列表：</b></td>
       </tr>
     </table>
-    <a-list size="small" style="width:300px;" bordered :dataSource="permission.tasks">
-      <a-list-item slot="renderItem" slot-scope="item, index">
-        <a-list-item-meta><span slot="title" >{{ item }}</span></a-list-item-meta>
-        <div style="color: #f5222d; cursor: pointer;" @click="removeTask(index)"><a-icon type="delete" /></div>
-      </a-list-item>
-      <div slot="header">
-        <a-button type="dashed" block @click="modalVisible = true"><a-icon type="plus" />添加任务</a-button>
-      </div>
-    </a-list>
 
-    <a-button @click="updatePermission" style="margin-top: 16px; width: 200px;" type="primary" :loading="loading">提交修改</a-button>
+    <a-table
+      style="width: 600px;"
+      :columns="columns"
+      :dataSource="taskList"
+      :loading="dataLoading"
+      size="middle"
+      rowKey="id"
+      :rowSelection="{selectedRowKeys: permission.tasks, onChange: onSelectChange}"
+    ></a-table>
+    
+    <a-button @click="updatePermission" style="margin-top: 16px; width: 200px;" type="primary" :loading="submitLoading">提交修改</a-button>
     <br>
     <a-button @click="deletePermission" style="margin-top: 16px; width: 200px;" type="danger">删除节点</a-button>
-
-    <a-modal
-      title="添加任务"
-      v-model="modalVisible"
-      @ok="addTask"
-      okText="确认"
-      cancelText="取消"
-    >
-      <a-input placeholder="任务ID" v-model="newTaskId"></a-input>
-    </a-modal>
 
   </div>
 </template>
@@ -47,9 +38,26 @@
 <script>
   import { Modal } from 'ant-design-vue';
 
+  const columns = [
+    {
+      title: 'ID',
+      dataIndex: 'id',
+      key: 'id'
+    },
+    {
+      title: '标题',
+      dataIndex: 'title',
+      key: 'title'
+    }
+  ];
+
   export default {
     data() {
       return {
+        columns,
+
+        taskList: [],
+
         permission: {
           id: this.$store.state.currentPermission.id,
           name: this.$store.state.currentPermission.name,
@@ -60,21 +68,21 @@
         newTaskId: '',
         modalVisible: false,
 
-        loading: false
+        submitLoading: false,
+        dataLoading: true
 
       }
     },
+    mounted() {
+      this.axios.get('/api/T/task')
+        .then(res => {
+          this.taskList = res.data;
+          this.dataLoading = false;
+        });
+    },
     methods: {
-      removeTask(index) {
-        this.permission.tasks.splice(index, 1);
-      },
-      addTask() {
-        this.permission.tasks.push(this.newTaskId);
-        this.newTaskId = '';
-        this.modalVisible = false;
-      },
       updatePermission() {
-        this.loading = true;
+        this.submitLoading = true;
         this.$axios.put('/api/A/permission', this.permission)
           .then(res => {
             this.$store.state.currentPermission = this.permission;
@@ -114,6 +122,9 @@
             });
           }
         });
+      },
+      onSelectChange(x) {
+        this.permission.tasks = x;
       }
     }
   }
