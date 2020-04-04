@@ -27,7 +27,7 @@
       rowKey="id"
       :rowSelection="{selectedRowKeys: permission.tasks, onChange: onSelectChange}"
     ></a-table>
-    
+
     <a-button @click="updatePermission" style="margin-top: 16px; width: 200px;" type="primary" :loading="submitLoading">提交修改</a-button>
     <br>
     <a-button @click="deletePermission" style="margin-top: 16px; width: 200px;" type="danger">删除节点</a-button>
