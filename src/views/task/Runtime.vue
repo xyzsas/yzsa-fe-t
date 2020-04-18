@@ -66,7 +66,7 @@
     >
       <a-input placeholder="用户ID" v-model="userId" style="margin-bottom: 16px;"></a-input>
       <br>
-      <a-time-picker placeholder="权限有效期" @change="onDurationChange"></a-time-picker>
+      <a-time-picker placeholder="权限有效时长(时:分:秒)" style="width: 200px;" @change="onDurationChange"></a-time-picker>
     </a-modal>
 
     <a-modal
