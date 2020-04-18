@@ -15,7 +15,7 @@
       <p>每行为一个节点的信息，每列<b>分别</b>为ID、名称、上级节点ID。<b>请不要添加表头。</b></p>
       <p style="color: #f5222d;"><b>请务必保证表格格式正确，否则可能会造成意料之外的错误！</b></p>
       <a-button type="primary" size="large" @click="onOpen" :loading="loading"><a-icon type="upload" />上传</a-button>
-      <input type="file" id="file" accept=".csv" @change="onUpload" style="display: none;"/>
+      <input type="file" id="file-permission" accept=".csv" @change="onUpload" style="display: none;"/>
     </template>
   </div>
 </template>
@@ -60,7 +60,7 @@
         ];
       },
       onOpen() {
-        document.getElementById("file").click();
+        document.getElementById("file-permission").click();
       },
       onUpload: function (e) {
         this.loading = true;
